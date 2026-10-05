@@ -17,6 +17,7 @@ import torch
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.exc import SQLAlchemyError
 from torch_geometric.data import Data
 
 from risklens import __version__
@@ -82,7 +83,7 @@ def create_risklens_app(
         db_adapter = DatabaseAdapter()
     try:
         db_adapter.seed_from_graph(data)
-    except Exception as e:
+    except (SQLAlchemyError, AttributeError, KeyError, TypeError, ValueError) as e:
         print(f"[RiskLens DB] Auto-seed notice: {e}")
 
     # Initialize Hybrid Engine & sensitivity state
